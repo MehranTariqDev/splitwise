@@ -1,0 +1,41 @@
+.center-div{
+  box-shadow: inset;
+}
+.top-div{
+  margin: auto;
+  padding: 10px;
+  text-align: center;
+
+  justify-content: space-between;
+  display: flex;
+  background-color: #eeeeee;
+  border: 1px solid #cccccc;
+}
+.bottom-div{
+  margin: auto;
+  border: 1px solid #cccccc;
+  padding: 10px;
+  text-align: center;
+}
+.orange-button{
+  color: white;
+  background-color: #ff652f;
+  padding: 10px;
+  font-family: sans-serif;
+  border-radius: 10px;
+  font-size: large;
+}
+.dashboard-img{
+  width: 20vh;
+}
+.instruction-text{
+  font-size: large;
+  color: #aaaaaa;
+  font-family: sans-serif;
+}
+.rightside-heading{
+  color: #5ac5a6;
+  font-size: 17px;
+  font-weight: bold;
+  margin-top: 10px;
+}

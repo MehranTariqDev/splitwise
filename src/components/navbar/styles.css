@@ -11,8 +11,8 @@
   color: black;
   text-decoration: none;
   padding: 10px;
-
 }
 .navbar.navbar-expand-lg{
   --bs-navbar-padding-x: none;
+  background-color: #1dc29f;
 }
