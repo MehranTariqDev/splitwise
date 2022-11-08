@@ -1,8 +1,17 @@
 import './styles.css';
 import { Link } from "react-router-dom";
 import image from '../../assets/images/splitwise.png'
+import { useEffect, useState } from 'react';
+import { onAuthStateChanged } from 'firebase/auth';
+import { auth } from '../../fireBaseConfig';
 
 const Navbar = () => {
+  const [user, setUser] = useState({});
+  useEffect(() => {
+    onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+  }, []);
 
   return (
     <>
@@ -11,12 +20,22 @@ const Navbar = () => {
           <span><img className="Logo" src={image} alt="logo" /></span>
           <span>
             <ul className="navbar-nav mr-auto mt-2 mt-lg-0">
-              <li className="navbar-nav">
-                <Link className="link" to={'/signup'} >SignUp</Link>
-              </li>
-              <li className="navbar-nav">
-                <Link className="link" to={'/login'}> Login</Link>
-              </li>
+              <div>
+                {user ? (
+                  <>
+                    {user?.email}
+                  </>
+                ) : (
+                  <>
+                    <li className="navbar-nav">
+                      <Link className="links" to={'/signup'} >SignUp</Link>
+                    </li>
+                    <li className="navbar-nav">
+                      <Link className="links" to={'/login'}> Login</Link>
+                    </li>
+                  </>
+                )}
+              </div>
             </ul>
           </span>
         </div>

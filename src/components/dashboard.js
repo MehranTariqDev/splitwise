@@ -1,12 +1,22 @@
-import { auth } from '../fireBaseConfig';
+import { auth, db } from '../fireBaseConfig';
 import { signOut, onAuthStateChanged } from "firebase/auth"
 import { useEffect, useState } from 'react';
 import './styles.css'
 import Popup from './popup/index';
+import { collection, doc, setDoc, getDocs } from "firebase/firestore";
+import Select from 'react-select';
+import makeAnimated from 'react-select/animated';
 
 const Dashboard = () => {
   const [user, setUser] = useState({});
   const [isOpen, setIsOpen] = useState(false);
+  const [description, setDescription] = useState({});
+  const [price, setPrice] = useState(0);
+  const [people, setPeople] = useState([]);
+  const animatedComponents = makeAnimated();
+  let fetchPeopleFlag = true;
+  const [selectedOption, setSelectedOption] = useState(null);
+  let numberOfPeople = selectedOption?.length ?? 1;
 
   const togglePopup = () => {
     setIsOpen(!isOpen);
@@ -17,11 +27,43 @@ const Dashboard = () => {
   const platesPage = () => {
     window.location.href = 'https://apps.apple.com/us/app/plates-by-splitwise-split/id669801762?ign-mpt=uo%3D4';
   }
+  const fetchPeople = async () => {
+    let arr = []
+    const querySnapshot = await getDocs(collection(db, "friends"));
+    querySnapshot.forEach((doc) => {
+      arr.push(doc.data());
+    })
+    if (fetchPeopleFlag) {
+      optionArray(arr, setPeople);
+      fetchPeopleFlag = false;
+    }
+  }
+  const optionArray = (arr, setPeople) => {
+    for (let object of arr) {
+      setPeople(people => [...people, { label: object['email'], value: object['name'] }])
+    }
+  }
+  const saveExpense = async () => {
+    const expense = collection(db, "expense");
+    await setDoc(doc(expense), {
+      category: "food",
+      description: description,
+      image: "",
+      participent: selectedOption,
+      price: price
+    });
+    setSelectedOption(null); setPrice(0);
+    setDescription({});
+    togglePopup();
+  }
+
   useEffect(() => {
     onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
     });
+    fetchPeople();
   }, []);
+
   return (
     <>
       <div className='row'>
@@ -32,40 +74,49 @@ const Dashboard = () => {
             <h3>
               Dashboard
             </h3>
-            <input type="button" value="Add expense" className='orange-button' onClick={togglePopup}/>
+            <input type="button" value="Add expense" className='orange-button' onClick={togglePopup} />
             {isOpen && <Popup
               handleClose={togglePopup}
               content={<>
                 <h4>Add a expense</h4>
-                <p>With <b>you</b> and: </p>
+                <div className='row'>
+                  <div className='col-6'>
+                    <p>With <b>you</b> and:</p>
+                  </div>
+                  <div className='col-6'>
+                    <Select options={people} components={animatedComponents}
+                      defaultValue={selectedOption} onChange={setSelectedOption}
+                      isMulti />
+                  </div>
+                </div>
                 <div className="form">
                   <div className="input-div">
-                    <label className="label"></label>
                     <input type="email" className="input-field" placeholder="Enter a description"
                       onChange={(event) => {
-
+                        setDescription(event.target.value);
                       }} />
                   </div>
                   <div className="input-div">
-
                     <input type="email" className="input-field" placeholder="0.00"
                       onChange={(event) => {
-
+                        setPrice(event.target.value);
                       }} />
                   </div>
-                  <p>Paid by </p>
+                  <p>Paid by you and split equally.</p>
+                  <p>(${price / (numberOfPeople + 1)}/person)</p>
                 </div>
-                <button className='btn btn-danger m-1'>cancel</button>
-                <button className='btn btn-success'>save</button>
-              </>}
+                <button className='btn btn-danger m-1' onClick={togglePopup}>cancel</button>
+                <button className='btn btn-success' onClick={saveExpense}>save</button>
+              </>
+              }
             />}
           </div>
           <div className='bottom-div'>
             <div className='row'>
               <div className='col-4'>
                 <img className='dashboard-img'
-                src='https://assets.splitwise.com/assets/fat_rabbit/empty-table-effed2a2e610373b6407d746cb95858f5d47329c8610bb70f1fd2040dfa35165.png'
-                alt='dashboard img'
+                  src='https://assets.splitwise.com/assets/fat_rabbit/empty-table-effed2a2e610373b6407d746cb95858f5d47329c8610bb70f1fd2040dfa35165.png'
+                  alt='dashboard img'
                 />
               </div>
               <div className='col-8'>

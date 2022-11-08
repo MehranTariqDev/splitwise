@@ -1,5 +1,4 @@
-.Logo{
-  background-color: #fff;
+.Logo {
   padding: 8px;
   height: 50%;
   width: 15%;
@@ -7,12 +6,14 @@
   box-sizing: border-box;
   border-radius: 5px;
 }
-.link{
-  color: black;
+
+.links {
+  color: white;
   text-decoration: none;
   padding: 10px;
 }
-.navbar.navbar-expand-lg{
+
+.navbar.navbar-expand-lg {
   --bs-navbar-padding-x: none;
   background-color: #1dc29f;
 }
